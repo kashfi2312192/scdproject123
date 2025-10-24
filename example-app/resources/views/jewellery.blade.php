@@ -140,7 +140,7 @@
                         <textarea id="reviewComment" class="form-control" rows="4" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn text-white px-4 py-2" style="background-color: #dc2d34;">
+                    <button type="submit" class="btn text-white px-4 py-2" style="background-color: black;">
                         Submit Review
                     </button>
                 </form>
