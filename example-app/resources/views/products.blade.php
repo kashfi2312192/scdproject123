@@ -81,7 +81,7 @@
                             <p class="mb-3"><strong>PKR {{ number_format($product['price']) }}</strong></p>
 
                             <div class="mt-auto">
-                                <a href="{{ route('products.show', $product['slug']) }}" class="btn btn-sm text-white w-100" style="background-color: #dc2d34;">View Details</a>
+                                <a href="{{ route('products.show', $product['slug']) }}" class="btn btn-sm text-white w-100" style="background-color: black;">View Details</a>
                             </div>
                         </div>
                     </div>
