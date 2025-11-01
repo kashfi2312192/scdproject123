@@ -61,11 +61,11 @@
                             <ul class="list-unstyled mb-4">
                                 <li class="mb-3">
                                     <strong>Address:</strong><br>
-                                    123 Suspendis Matti, Visaosang Building, VST District, NY Accums, North American
+                                    PO Box 1622 Bamboo Street West
                                 </li>
                                 <li class="mb-3">
                                     <strong>Email:</strong><br>
-                                    <a href="mailto:support@domain.com" class="text-decoration-none text-dark">support@domain.com</a>
+                                    <a href="mailto:Emillia@example.com" class="text-decoration-none text-dark">support@domain.com</a>
                                 </li>
                                 <li class="mb-3">
                                     <strong>Call Us:</strong><br>

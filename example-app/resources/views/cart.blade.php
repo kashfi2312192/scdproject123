@@ -72,7 +72,8 @@
                         <button type="submit" class="btn btn-outline-danger rounded-pill px-4 mb-2">Clear Cart</button>
                     </form>
 
-                    <button class="btn btn-dark rounded-pill px-4 mb-2">Proceed to Checkout</button>
+                    <button class="btn btn-dark rounded-pill px-4 mb-2"><a href="{{ route('checkout') }}" class="btn btn-dark w-100">Proceed to Checkout</a>
+                    </button>
                 </div>
             @endif
         </div>
