@@ -24,6 +24,8 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Price</th>
+                                <th>In Stock</th>
+                                <th>Discount %</th>
                                 <th>Created</th>
                                 <th class="text-end">Actions</th>
                             </tr>
@@ -33,6 +35,12 @@
                                 <tr>
                                     <td class="fw-semibold">{{ $product->name }}</td>
                                     <td>PKR {{ number_format($product->price, 2) }}</td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" {{ $product->is_in_stock ? 'checked' : '' }} disabled>
+                                        </div>
+                                    </td>
+                                    <td>{{ $product->discount_percentage ? number_format($product->discount_percentage, 2) . '%' : 'N/A' }}</td>
                                     <td>{{ $product->created_at->format('M d, Y') }}</td>
                                     <td class="text-end">
                                         <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>

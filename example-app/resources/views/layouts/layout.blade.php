@@ -77,29 +77,53 @@
         <div class="row g-4 text-center text-md-start">
             <div class="col-12 col-md-3">
                 <h5 class="fw-bold mb-3">Contact Us</h5>
-                <p class="mb-1">📍 PO Box 1622 Bamboo Street West</p>
-                <p class="mb-1">📞 +(123)-456-7890</p>
-                <p class="mb-1">📧 Emillia@example.com</p>
-                <p>🕘 9:00AM - 10:00PM</p>
+                @php
+                    $contactInfo = [
+                        'address' => \App\Models\ContactInfo::getValue('address', 'PO Box 1622 Bamboo Street West'),
+                        'phone' => \App\Models\ContactInfo::getValue('phone', '+(123)-456-7890'),
+                        'email' => \App\Models\ContactInfo::getValue('email', 'Emillia@example.com'),
+                        'opening_hours' => \App\Models\ContactInfo::getValue('opening_hours', '9:00AM - 10:00PM'),
+                    ];
+                @endphp
+                <p class="mb-1">📍 {{ $contactInfo['address'] }}</p>
+                <p class="mb-1">📞 {{ $contactInfo['phone'] }}</p>
+                <p class="mb-1">📧 {{ $contactInfo['email'] }}</p>
+                <p>🕘 {{ $contactInfo['opening_hours'] }}</p>
             </div>
 
             <div class="col-6 col-md-3">
                 <h5 class="fw-bold mb-3">Our Policies</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-decoration-none text-dark">Shipping & Delivery</a></li>
-                    <li><a href="#" class="text-decoration-none text-dark">Returns Policy</a></li>
-                    <li><a href="#" class="text-decoration-none text-dark">Terms & Conditions</a></li>
-                    <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+                    @php
+                        $policies = \App\Models\Policy::where(function($query) {
+                            $query->where('type', 'policy')->orWhereNull('type');
+                        })->get();
+                    @endphp
+                    @forelse($policies as $policy)
+                        <li><a href="{{ route('policy.show', $policy->slug) }}" class="text-decoration-none text-dark">{{ $policy->title }}</a></li>
+                    @empty
+                        <li><a href="#" class="text-decoration-none text-dark">Shipping & Delivery</a></li>
+                        <li><a href="#" class="text-decoration-none text-dark">Returns Policy</a></li>
+                        <li><a href="#" class="text-decoration-none text-dark">Terms & Conditions</a></li>
+                        <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+                    @endforelse
                 </ul>
             </div>
 
             <div class="col-6 col-md-3">
                 <h5 class="fw-bold mb-3">Customer Care</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-decoration-none text-dark">FAQs</a></li>
-                    <li><a href="#" class="text-decoration-none text-dark">Terms of Service</a></li>
-                    <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
-                    <li><a href="#" class="text-decoration-none text-dark">Gift Card</a></li>
+                    @php
+                        $customerCare = \App\Models\Policy::where('type', 'customer_care')->get();
+                    @endphp
+                    @forelse($customerCare as $policy)
+                        <li><a href="{{ route('policy.show', $policy->slug) }}" class="text-decoration-none text-dark">{{ $policy->title }}</a></li>
+                    @empty
+                        <li><a href="#" class="text-decoration-none text-dark">FAQs</a></li>
+                        <li><a href="#" class="text-decoration-none text-dark">Terms of Service</a></li>
+                        <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+                        <li><a href="#" class="text-decoration-none text-dark">Gift Card</a></li>
+                    @endforelse
                 </ul>
             </div>
 

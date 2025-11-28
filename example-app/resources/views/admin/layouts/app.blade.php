@@ -18,6 +18,18 @@
             <a href="{{ route('admin.products.index') }}" class="nav-link text-white {{ request()->routeIs('admin.products.*') ? 'fw-bold' : 'text-opacity-75' }}">
                 <i class="fa-solid fa-boxes-stacked me-2"></i> Products
             </a>
+            <a href="{{ route('admin.contacts.index') }}" class="nav-link text-white {{ request()->routeIs('admin.contacts.*') ? 'fw-bold' : 'text-opacity-75' }}">
+                <i class="fa-solid fa-envelope me-2"></i> Contacts
+            </a>
+            <a href="{{ route('admin.orders.index') }}" class="nav-link text-white {{ request()->routeIs('admin.orders.*') ? 'fw-bold' : 'text-opacity-75' }}">
+                <i class="fa-solid fa-shopping-cart me-2"></i> Orders
+            </a>
+            <a href="{{ route('admin.policies.index') }}" class="nav-link text-white {{ request()->routeIs('admin.policies.*') ? 'fw-bold' : 'text-opacity-75' }}">
+                <i class="fa-solid fa-file-lines me-2"></i> Policies
+            </a>
+            <a href="{{ route('admin.contact-infos.index') }}" class="nav-link text-white {{ request()->routeIs('admin.contact-infos.*') ? 'fw-bold' : 'text-opacity-75' }}">
+                <i class="fa-solid fa-address-card me-2"></i> Contact Info
+            </a>
         </nav>
         <div class="mt-auto">
             <p class="small text-opacity-75 mb-1">Signed in as</p>

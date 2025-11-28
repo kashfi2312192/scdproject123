@@ -26,6 +26,8 @@ class StoreProductRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'image' => ['nullable', 'image', 'max:2048'],
+            'is_in_stock' => ['nullable', 'boolean'],
+            'discount_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }
 }

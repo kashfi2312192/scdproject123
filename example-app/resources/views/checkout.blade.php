@@ -26,7 +26,7 @@
                                 @foreach($cart as $item)
                                     <tr>
                                         <td width="70">
-                                            <img src="{{ asset('img/' . $item['image']) }}" class="rounded" style="width:70px; height:70px; object-fit:cover;">
+                                            <img src="{{ $item['image_url'] ?? asset('img/logo.webp') }}" alt="{{ $item['name'] }}" class="rounded" style="width:70px; height:70px; object-fit:cover;">
                                         </td>
                                         <td>
                                             <strong>{{ $item['name'] }}</strong><br>

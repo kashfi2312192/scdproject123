@@ -37,6 +37,9 @@ class ProductController extends Controller
             $data['description'] = null;
         }
 
+        $data['is_in_stock'] = $request->has('is_in_stock') ? (bool) $request->input('is_in_stock') : false;
+        $data['discount_percentage'] = $request->filled('discount_percentage') ? $request->input('discount_percentage') : null;
+
         Product::create($data);
 
         return redirect()
@@ -60,6 +63,9 @@ class ProductController extends Controller
         if (($data['description'] ?? null) === '') {
             $data['description'] = null;
         }
+
+        $data['is_in_stock'] = $request->has('is_in_stock') ? (bool) $request->input('is_in_stock') : false;
+        $data['discount_percentage'] = $request->filled('discount_percentage') ? $request->input('discount_percentage') : null;
 
         $product->update($data);
 

@@ -23,3 +23,16 @@
     @endif
 </div>
 
+<div class="mb-3">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="is_in_stock" name="is_in_stock" value="1" {{ old('is_in_stock', $product->is_in_stock ?? true) ? 'checked' : '' }}>
+        <label class="form-check-label" for="is_in_stock">In Stock</label>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label for="discount_percentage" class="form-label">Discount Percentage</label>
+    <input type="number" step="0.01" min="0" max="100" class="form-control" id="discount_percentage" name="discount_percentage" value="{{ old('discount_percentage', $product->discount_percentage ?? '') }}" placeholder="e.g., 15.50">
+    <small class="text-muted">Enter discount percentage (0-100)</small>
+</div>
+
