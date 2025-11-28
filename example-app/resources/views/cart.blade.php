@@ -31,18 +31,18 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($cart as $item)
+                @foreach($cart as $item)
                             <tr>
                                 <td class="text-center">
-                                    <img src="{{ asset('img/' . $item['image']) }}" alt="{{ $item['name'] }}" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                            <img src="{{ $item['image_url'] }}" alt="{{ $item['name'] }}" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
                                 </td>
                                 <td class="fw-semibold">{{ $item['name'] }}</td>
                                 <td>PKR {{ number_format($item['price'], 2) }}</td>
                                 <td>
                                     <div class="d-flex align-items-center justify-content-left">
-                                        <button class="btn btn-sm btn-outline-dark me-2 qty-btn" data-slug="{{ $item['slug'] }}" data-action="decrease">-</button>
-                                        <input type="text" value="{{ $item['quantity'] }}" class="form-control text-center qty-input" style="width: 50px;" data-slug="{{ $item['slug'] }}">
-                                        <button class="btn btn-sm btn-outline-dark ms-2 qty-btn" data-slug="{{ $item['slug'] }}" data-action="increase">+</button>
+                                <button class="btn btn-sm btn-outline-dark me-2 qty-btn" data-id="{{ $item['id'] }}" data-action="decrease">-</button>
+                                <input type="text" value="{{ $item['quantity'] }}" class="form-control text-center qty-input" style="width: 50px;" data-id="{{ $item['id'] }}">
+                                <button class="btn btn-sm btn-outline-dark ms-2 qty-btn" data-id="{{ $item['id'] }}" data-action="increase">+</button>
                                     </div>
                                 </td>
 
@@ -50,7 +50,7 @@
                                 <td class="text-center">
                                     <form action="{{ route('cart.remove') }}" method="POST" class="d-inline">
                                         @csrf
-                                        <input type="hidden" name="slug" value="{{ $item['slug'] }}">
+                                <input type="hidden" name="product_id" value="{{ $item['id'] }}">
                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">Remove</button>
                                     </form>
                                 </td>
@@ -72,8 +72,7 @@
                         <button type="submit" class="btn btn-outline-danger rounded-pill px-4 mb-2">Clear Cart</button>
                     </form>
 
-                    <button class="btn btn-dark rounded-pill px-4 mb-2"><a href="{{ route('checkout') }}" class="btn btn-dark w-100">Proceed to Checkout</a>
-                    </button>
+                    <a href="{{ route('checkout') }}" class="btn btn-dark rounded-pill px-4 mb-2">Proceed to Checkout</a>
                 </div>
             @endif
         </div>
@@ -82,9 +81,9 @@
     <script>
         document.querySelectorAll('.qty-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const slug = this.dataset.slug;
+                const productId = this.dataset.id;
                 const action = this.dataset.action;
-                const input = document.querySelector(`.qty-input[data-slug="${slug}"]`);
+                const input = document.querySelector(`.qty-input[data-id="${productId}"]`);
                 let qty = parseInt(input.value);
 
                 if(action === 'increase') qty++;
@@ -100,7 +99,7 @@
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ slug: slug, quantity: qty })
+                    body: JSON.stringify({ product_id: productId, quantity: qty })
                 })
                     .then(res => res.json())
                     .then(data => {

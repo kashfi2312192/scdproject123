@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Product;
 
 class PageController extends Controller
 {
-    // Add this method
     public function home()
     {
-        return view('homepage');
+        $featuredProducts = Product::latest()->take(8)->get();
+
+        return view('homepage', compact('featuredProducts'));
     }
 }

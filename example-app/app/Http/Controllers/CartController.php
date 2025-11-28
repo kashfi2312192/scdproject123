@@ -2,109 +2,134 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class CartController extends Controller
 {
-    //  Show the cart page
-    public function index()
+    public function index(): View
     {
-        $cart = session()->get('cart', []);
-        $total = 0;
+        $cart = collect(session()->get('cart', []))
+            ->map(function ($item) {
+                $item['image_url'] = $item['image_url'] ?? $this->resolveImageUrl($item['image'] ?? null);
 
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+                return $item;
+            })
+            ->toArray();
 
-        return view('cart', compact('cart', 'total'));
+        session()->put('cart', $cart);
+
+        return view('cart', [
+            'cart' => $cart,
+            'total' => $this->calculateTotal($cart),
+        ]);
     }
 
-    //  Add to Cart
-    // Add product to cart
     public function add(Request $request)
     {
-        // Expecting the request to send 'slug' of the product
-        $slug = $request->input('slug');
+        $validated = $request->validate([
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+            'quantity' => ['nullable', 'integer', 'min:1'],
+        ]);
 
-        // Get product details from ProductController
-        $products = (new \App\Http\Controllers\ProductController)->productData();
-        $product = collect($products)->firstWhere('slug', $slug);
-
-        if (!$product) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Product not found!'
-            ], 404);
-        }
-
-        $quantity = (int) $request->input('quantity', 1);
+        $product = Product::findOrFail($validated['product_id']);
+        $quantity = (int) ($validated['quantity'] ?? 1);
 
         $cart = session()->get('cart', []);
+        $key = (string) $product->id;
 
-        // Use slug as key to prevent duplicates
-        if (isset($cart[$slug])) {
-            $cart[$slug]['quantity'] += $quantity;
+        if (isset($cart[$key])) {
+            $cart[$key]['quantity'] += $quantity;
         } else {
-            $cart[$slug] = [
-                'slug' => $product['slug'],
-                'name' => $product['name'],
-                'price' => $product['price'],
-                'image' => $product['image'],
+            $cart[$key] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->price,
+                'image' => $product->image,
+                'image_url' => $product->image_url,
                 'quantity' => $quantity,
             ];
         }
 
         session()->put('cart', $cart);
 
-        return response()->json([
-            'success' => true,
-            'message' => "✅ Added $quantity item(s) to your cart!"
-        ]);
+        $message = "✅ Added {$quantity} item(s) to your cart!";
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'cartTotal' => $this->calculateTotal($cart),
+            ]);
+        }
+
+        return redirect()->route('cart.index')->with('success', $message);
     }
 
-    // ✅ Remove single item
-    public function remove(Request $request)
+    public function remove(Request $request): RedirectResponse
     {
-        $slug = $request->input('slug');
-        $cart = session()->get('cart', []);
+        $validated = $request->validate([
+            'product_id' => ['required', 'integer'],
+        ]);
 
-        if (isset($cart[$slug])) {
-            unset($cart[$slug]);
+        $cart = session()->get('cart', []);
+        $key = (string) $validated['product_id'];
+
+        if (isset($cart[$key])) {
+            unset($cart[$key]);
             session()->put('cart', $cart);
         }
 
         return redirect()->route('cart.index')->with('success', 'Item removed from cart.');
     }
 
-    public function update(Request $request)
+    public function update(Request $request): JsonResponse
     {
-        $slug = $request->input('slug');
-        $quantity = (int) $request->input('quantity', 1);
+        $validated = $request->validate([
+            'product_id' => ['required', 'integer'],
+            'quantity' => ['required', 'integer', 'min:1'],
+        ]);
 
         $cart = session()->get('cart', []);
+        $key = (string) $validated['product_id'];
 
-        if (isset($cart[$slug])) {
-            $cart[$slug]['quantity'] = max(1, $quantity); // prevent negative
-            session()->put('cart', $cart);
+        if (!isset($cart[$key])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found in cart.',
+            ], 404);
         }
 
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        $cart[$key]['quantity'] = $validated['quantity'];
+        session()->put('cart', $cart);
 
         return response()->json([
             'success' => true,
-            'quantity' => $cart[$slug]['quantity'],
-            'itemTotal' => $cart[$slug]['price'] * $cart[$slug]['quantity'],
-            'cartTotal' => $total,
+            'quantity' => $cart[$key]['quantity'],
+            'itemTotal' => $cart[$key]['price'] * $cart[$key]['quantity'],
+            'cartTotal' => $this->calculateTotal($cart),
         ]);
     }
 
-    // Clear the entire cart
-    public function clear()
+    public function clear(): RedirectResponse
     {
         session()->forget('cart');
+
         return redirect()->route('cart.index')->with('success', 'Cart cleared successfully.');
+    }
+
+    private function calculateTotal(array $cart): float
+    {
+        return collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
+    }
+
+    private function resolveImageUrl(?string $path): string
+    {
+        $product = new Product(['image' => $path]);
+
+        return $product->image_url;
     }
 }

@@ -149,6 +149,40 @@
         </div>
     </section>
 
+    @if($featuredProducts->isNotEmpty())
+        <section class="py-5 bg-light">
+            <div class="container">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+                    <div>
+                        <p class="text-uppercase text-muted small mb-1">Trending now</p>
+                        <h2 class="fw-bold mb-0">Featured Products</h2>
+                    </div>
+                    <a href="{{ route('products') }}" class="btn btn-outline-dark rounded-pill px-4 mt-3 mt-md-0">View all products</a>
+                </div>
+
+                <div class="row g-4">
+                    @foreach($featuredProducts as $product)
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="ratio ratio-1x1 bg-light">
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid rounded-top object-fit-cover">
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="fw-semibold">{{ $product->name }}</h5>
+                                    <p class="text-muted small flex-grow-1">{{ \Illuminate\Support\Str::limit($product->description, 80) }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold">PKR {{ number_format($product->price, 2) }}</span>
+                                        <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-dark rounded-pill px-3">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     <!-- Optional CSS for hover effect -->
     <style>
         .hover-scale:hover {
