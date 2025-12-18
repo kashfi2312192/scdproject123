@@ -105,7 +105,12 @@
                                         </span>
                                     </div>
                                     <p class="text-muted small mb-0">{{ $review->created_at->diffForHumans() }}</p>
-                                    <p class="mb-0 mt-2">{{ $review->comment }}</p>
+                                    <p class="mb-2 mt-2">{{ $review->comment }}</p>
+                                    @if($review->image_url)
+                                        <div class="mt-2">
+                                            <img src="{{ $review->image_url }}" alt="Review image" class="img-thumbnail" style="max-width: 300px; max-height: 300px; object-fit: contain;">
+                                        </div>
+                                    @endif
                                 </div>
                             @empty
                                 <p class="text-muted mb-0">No reviews yet. Be the first to share your thoughts!</p>
@@ -121,7 +126,7 @@
                     <div class="alert alert-success">{{ session('status') }}</div>
                 @endif
 
-                <form action="{{ route('products.reviews.store', $product) }}" method="POST" class="p-4 shadow-sm rounded-3 bg-white">
+                <form action="{{ route('products.reviews.store', $product) }}" method="POST" class="p-4 shadow-sm rounded-3 bg-white" enctype="multipart/form-data">
                     @csrf
                     <h3 class="mb-4 fw-bold">Customer Reviews</h3>
                     <h4 class="mb-3 fw-semibold">Write a Review</h4>
@@ -155,6 +160,21 @@
                         @error('comment')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reviewImage" class="form-label fw-bold">Upload Image (Optional)</label>
+                        <input type="file" id="reviewImage" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                        <small class="form-text text-muted">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 5MB</small>
+                        @error('image')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        
+                        <!-- Image Preview -->
+                        <div id="imagePreviewContainer" class="mt-3" style="display: none;">
+                            <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-width: 300px; max-height: 300px; object-fit: contain;">
+                            <button type="button" id="removeImagePreview" class="btn btn-sm btn-danger mt-2">Remove Image</button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn text-white px-4 py-2" style="background-color: black;">
@@ -205,6 +225,46 @@
                 .catch(err => console.error(err));
         };
 
+        // Image Preview for Review Form
+        const reviewImageInput = document.getElementById('reviewImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const removeImagePreview = document.getElementById('removeImagePreview');
+
+        if (reviewImageInput) {
+            reviewImageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                    if (!validTypes.includes(file.type)) {
+                        alert('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+                        this.value = '';
+                        return;
+                    }
+
+                    // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size must be less than 5MB');
+                        this.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreviewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeImagePreview.addEventListener('click', function() {
+                reviewImageInput.value = '';
+                imagePreview.src = '';
+                imagePreviewContainer.style.display = 'none';
+            });
+        }
 
     </script>
 @endsection

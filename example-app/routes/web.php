@@ -21,6 +21,7 @@ Route::get('/', [PageController::class, 'home'])->name('homepage');
 Route::get('/homepage', fn () => redirect()->route('homepage'));
 
 Route::get('/products', [ProductController::class, 'index'])->name('products');
+Route::get('/products/search/ajax', [ProductController::class, 'search'])->name('products.search.ajax');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.reviews.store');
 

@@ -37,6 +37,42 @@ class ProductController extends Controller
         return view('products', compact('products'));
     }
 
+    public function search(Request $request)
+    {
+        $query = trim($request->get('q', ''));
+        $category = trim($request->get('category', ''));
+
+        // Return empty if no query
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        $products = Product::query()
+            ->when($query, function ($queryBuilder) use ($query) {
+                // Only search by name - case-insensitive matching
+                $searchTerm = '%' . strtolower($query) . '%';
+                $queryBuilder->whereRaw('LOWER(name) LIKE ?', [$searchTerm]);
+            })
+            ->when($category, function ($queryBuilder) use ($category) {
+                // Filter by category
+                $queryBuilder->where('category', $category);
+            })
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        return response()->json($products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'category' => $product->category,
+                'price' => $product->price,
+                'image_url' => $product->image_url,
+                'url' => route('products.show', $product),
+            ];
+        }));
+    }
+
     public function show(Product $product)
     {
         $product->load(['reviews' => function ($query) {
