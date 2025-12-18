@@ -47,6 +47,9 @@
                     <li class="nav-item">
                         <a href="{{ route('contactus') }}" class="nav-link {{ request()->routeIs('contactus') ? 'active' : '' }}">Contact</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/admin') }}" class="nav-link">Admin</a>
+                    </li>
                 </ul>
             </div>
 
