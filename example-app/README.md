@@ -1,61 +1,360 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Jewelry E-Commerce Store
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, full-featured e-commerce web application built with Laravel 12 for selling jewelry and fashion accessories. This application provides a complete shopping experience with product catalog, shopping cart, checkout process, product reviews, and an admin panel for managing products.
 
-## About Laravel
+## Project Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This is a Laravel-based e-commerce platform designed for jewelry retailers. The application features:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Key Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Product Catalog**: Browse and view detailed product information with images, descriptions, pricing, and categories
+- **Shopping Cart**: Session-based shopping cart with add, remove, update, and clear functionality
+- **Checkout Process**: Complete order placement workflow
+- **Product Reviews**: Customers can leave reviews and ratings for products
+- **User Authentication**: Secure user registration and login powered by Laravel Breeze
+- **Admin Panel**: Separate admin authentication and dashboard for managing products
+- **Responsive Design**: Modern UI built with Tailwind CSS and Alpine.js
+- **Product Management**: Full CRUD operations for products including images, pricing, stock, categories, and tags
 
-## Learning Laravel
+### Technology Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Backend**: Laravel 12 (PHP 8.2+)
+- **Frontend**: Tailwind CSS, Alpine.js, Vite
+- **Authentication**: Laravel Breeze
+- **Database**: SQLite (default) or MySQL/PostgreSQL
+- **Asset Compilation**: Vite
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Setup Instructions
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Prerequisites
 
-## Laravel Sponsors
+Before you begin, ensure you have the following installed on your system:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **PHP** >= 8.2 with extensions:
+  - BCMath
+  - Ctype
+  - cURL
+  - DOM
+  - Fileinfo
+  - JSON
+  - Mbstring
+  - OpenSSL
+  - PCRE
+  - PDO
+  - Tokenizer
+  - XML
+- **Composer** (PHP dependency manager)
+- **Node.js** >= 18.x and **npm** (for frontend assets)
+- **Database**: SQLite (included) or MySQL/PostgreSQL
 
-### Premium Partners
+### Installation Steps
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. **Clone or navigate to the project directory**
+   ```bash
+   cd example-app
+   ```
 
-## Contributing
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Create environment file**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   If `.env.example` doesn't exist, create a `.env` file with the following minimum configuration:
+   ```env
+   APP_NAME="Jewelry Store"
+   APP_ENV=local
+   APP_KEY=
+   APP_DEBUG=true
+   APP_URL=http://localhost:8000
+   
+   DB_CONNECTION=sqlite
+   DB_DATABASE=database/database.sqlite
+   ```
 
-## Code of Conduct
+4. **Generate application key**
+   ```bash
+   php artisan key:generate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Create SQLite database file** (if using SQLite)
+   ```bash
+   touch database/database.sqlite
+   ```
 
-## Security Vulnerabilities
+6. **Run database migrations**
+   ```bash
+   php artisan migrate
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. **Seed the database** (optional - adds sample products)
+   ```bash
+   php artisan db:seed --class=ProductSeeder
+   ```
+
+8. **Install Node.js dependencies**
+   ```bash
+   npm install
+   ```
+
+9. **Build frontend assets**
+   ```bash
+   npm run build
+   ```
+
+### Quick Setup (Alternative)
+
+You can use the built-in setup script that automates most of the installation:
+
+```bash
+composer run setup
+```
+
+This command will:
+- Install Composer dependencies
+- Copy `.env.example` to `.env` (if it doesn't exist)
+- Generate application key
+- Run database migrations
+- Install npm dependencies
+- Build frontend assets
+
+### Database Configuration
+
+#### Using SQLite (Default - Recommended for Development)
+
+The application is configured to use SQLite by default. Simply ensure the database file exists:
+
+```bash
+touch database/database.sqlite
+```
+
+#### Using MySQL/PostgreSQL
+
+If you prefer MySQL or PostgreSQL, update your `.env` file:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+Then create the database and run migrations:
+
+```bash
+php artisan migrate
+```
+
+### Storage Setup
+
+Ensure the storage directory is writable:
+
+```bash
+php artisan storage:link
+```
+
+On Linux/Mac:
+```bash
+chmod -R 775 storage bootstrap/cache
+```
+
+## Usage Guide
+
+### Starting the Development Server
+
+#### Option 1: Standard Development Mode
+
+Start the Laravel development server and Vite dev server separately:
+
+**Terminal 1 - Laravel Server:**
+```bash
+php artisan serve
+```
+
+**Terminal 2 - Vite Dev Server:**
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:8000`
+
+#### Option 2: Concurrent Development Mode (Recommended)
+
+Use the built-in dev script that runs all services concurrently:
+
+```bash
+composer run dev
+```
+
+This starts:
+- Laravel development server (port 8000)
+- Queue worker
+- Vite dev server
+
+### Accessing the Application
+
+#### Customer Interface
+
+- **Homepage**: `http://localhost:8000/`
+- **Products**: `http://localhost:8000/products`
+- **Cart**: `http://localhost:8000/cart`
+- **Checkout**: `http://localhost:8000/checkout`
+- **Contact**: `http://localhost:8000/contactus`
+
+#### User Authentication
+
+- **Register**: `http://localhost:8000/register`
+- **Login**: `http://localhost:8000/login`
+- **Dashboard**: `http://localhost:8000/dashboard` (after login)
+
+#### Admin Panel
+
+- **Admin Login**: `http://localhost:8000/admin/login`
+- **Admin Dashboard**: `http://localhost:8000/admin` (after admin login)
+- **Manage Products**: `http://localhost:8000/admin/products`
+
+### Creating an Admin User
+
+To create an admin user, you can use Laravel Tinker:
+
+```bash
+php artisan tinker
+```
+
+Then run:
+```php
+$user = App\Models\User::create([
+    'name' => 'Admin User',
+    'email' => 'admin@example.com',
+    'password' => bcrypt('password'),
+    'is_admin' => true
+]);
+```
+
+Or create a seeder for admin users.
+
+### Using the Application
+
+#### As a Customer
+
+1. **Browse Products**: Visit the products page to see all available items
+2. **View Product Details**: Click on any product to see full details, images, and reviews
+3. **Add to Cart**: Click "Add to Cart" on any product page
+4. **Manage Cart**: Visit the cart page to update quantities or remove items
+5. **Checkout**: Proceed to checkout to complete your order
+6. **Leave Reviews**: After viewing a product, you can leave a review (requires authentication)
+
+#### As an Admin
+
+1. **Login**: Access the admin panel at `/admin/login`
+2. **Dashboard**: View the admin dashboard for an overview
+3. **Manage Products**: 
+   - View all products at `/admin/products`
+   - Create new products
+   - Edit existing products
+   - Delete products
+4. **Product Fields**: When creating/editing products, you can set:
+   - Name, description, and short description
+   - Price, old price, and discount percentage
+   - Stock quantity and SKU
+   - Category and tags
+   - Product image
+
+### Building for Production
+
+When deploying to production:
+
+1. **Set environment to production**
+   ```env
+   APP_ENV=production
+   APP_DEBUG=false
+   ```
+
+2. **Optimize the application**
+   ```bash
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   ```
+
+3. **Build production assets**
+   ```bash
+   npm run build
+   ```
+
+### Running Tests
+
+The application includes PHPUnit tests. Run them with:
+
+```bash
+composer run test
+```
+
+Or directly:
+```bash
+php artisan test
+```
+
+## Project Structure
+
+```
+example-app/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/        # Application controllers
+│   │   │   ├── Admin/          # Admin panel controllers
+│   │   │   ├── CartController.php
+│   │   │   ├── ProductController.php
+│   │   │   └── ...
+│   │   └── Middleware/         # Custom middleware
+│   └── Models/                  # Eloquent models
+│       ├── Product.php
+│       ├── ProductReview.php
+│       └── User.php
+├── database/
+│   ├── migrations/              # Database migrations
+│   └── seeders/                 # Database seeders
+├── public/                      # Public assets
+│   └── img/                     # Product images
+├── resources/
+│   ├── views/                   # Blade templates
+│   │   ├── admin/               # Admin panel views
+│   │   ├── components/          # Reusable components
+│   │   └── layouts/             # Layout templates
+│   ├── css/                     # Stylesheets
+│   └── js/                      # JavaScript files
+└── routes/
+    └── web.php                  # Web routes
+```
+
+## Additional Notes
+
+- **Session Storage**: The shopping cart uses Laravel sessions. Ensure sessions are properly configured in `config/session.php`
+- **File Storage**: Product images can be stored in `public/img/products/` or uploaded via the admin panel
+- **Queue Jobs**: If using queues, ensure the queue worker is running: `php artisan queue:work`
+- **Logs**: Application logs are stored in `storage/logs/laravel.log`
+
+## Troubleshooting
+
+### Common Issues
+
+1. **"Class not found" errors**: Run `composer dump-autoload`
+2. **Assets not loading**: Run `npm run build` or `npm run dev`
+3. **Database errors**: Ensure migrations are run: `php artisan migrate`
+4. **Permission errors**: Check file permissions on `storage/` and `bootstrap/cache/`
+5. **Admin login not working**: Ensure the user has `is_admin = true` in the database
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Support
+
+For Laravel-specific help, refer to the [Laravel documentation](https://laravel.com/docs).
