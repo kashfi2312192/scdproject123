@@ -3,67 +3,110 @@
 @section('title', 'Emilliä - ' . $product->name)
 
 @section('content')
-    <section class="product-page py-5 bg-light mt-5">
+    <section class="py-5 bg-light">
         <div class="container">
             <div class="row align-items-center g-5">
 
                 <!-- Product Image -->
                 <div class="col-12 col-md-6 text-center">
-                    <img src="{{ $product->image_url }}"
-                         alt="{{ $product->name }}"
-                         class="img-fluid rounded shadow-sm w-100 w-md-75">
+                    <div class="position-relative">
+                        <img src="{{ $product->image_url }}"
+                             alt="{{ $product->name }}"
+                             class="img-fluid rounded shadow w-100 w-md-90">
+                        @if($product->category_name)
+                            <span class="badge bg-dark position-absolute top-0 end-0 m-3">{{ $product->category_name }}</span>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Product Details -->
                 <div class="col-12 col-md-6">
-                    <h2 class="fw-bold mb-2 fs-3 fs-md-2">{{ $product->name }}</h2>
+                    <h1 class="fw-bold display-4 mb-3">{{ $product->name }}</h1>
 
-                    <p class="text-muted small mb-2">
-                        <strong>{{ $averageRating > 0 ? number_format($averageRating, 1) : 'No ratings yet' }}</strong>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            @if($averageRating > 0)
+                                <span class="text-warning me-2">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star{{ $i <= $averageRating ? '' : '-empty' }}"></i>
+                                    @endfor
+                                </span>
+                                <strong class="me-2">{{ number_format($averageRating, 1) }}</strong>
+                            @else
+                                <span class="text-muted">No ratings yet</span>
+                            @endif
+                        </div>
                         @if($reviewsCount > 0)
-                            · {{ $reviewsCount }} review{{ $reviewsCount === 1 ? '' : 's' }}
+                            <span class="text-muted">·</span>
+                            <span class="text-muted">{{ $reviewsCount }} review{{ $reviewsCount === 1 ? '' : 's' }}</span>
+                            <a href="#reviews" class="text-decoration-none ms-2 fw-semibold" id="viewAllReviewsLink">
+                                <i class="fas fa-arrow-down me-1"></i>VIEW ALL REVIEWS
+                            </a>
                         @endif
-                        <a href="#reviews" class="text-decoration-none ms-2" id="viewAllReviewsLink">VIEW ALL REVIEWS</a>
-                    </p>
-
-                    <div class="d-flex align-items-baseline gap-3 mb-3 flex-wrap">
-                        <h4 class="fw-bold text-dark mb-0">PKR {{ number_format($product->price, 2) }}</h4>
                     </div>
 
-                    <p class="text-secondary small">{{ $product->description ?? 'No description available.' }}</p>
+                    <div class="d-flex align-items-baseline gap-3 mb-4 flex-wrap">
+                        <h3 class="fw-bold text-dark mb-0">PKR {{ number_format($product->price, 2) }}</h3>
+                    </div>
 
-                    <p class="text-danger fw-semibold small mb-1">
-                        Ships worldwide in 3–5 business days.
-                    </p>
+                    <p class="lead text-muted mb-4">{{ $product->description ?? 'No description available.' }}</p>
 
-                    <p class="mb-1 small">
-                        <strong>Available:</strong> 
-                        @if($product->is_in_stock)
-                            <span class="text-success">In stock</span>
-                        @else
-                            <span class="text-danger">Out of stock</span>
-                        @endif
-                    </p>
-                    <p class="mb-1 small">
-                        <strong>Created:</strong> {{ optional($product->created_at)->format('M d, Y') ?? 'N/A' }}
-                    </p>
+                    <div class="bg-light rounded p-4 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-shipping-fast text-primary me-3 fs-5"></i>
+                            <div>
+                                <strong class="d-block">Free Shipping</strong>
+                                <small class="text-muted">Ships worldwide in 3–5 business days</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-check-circle text-{{ $product->is_in_stock ? 'success' : 'danger' }} me-3 fs-5"></i>
+                            <div>
+                                <strong class="d-block">Availability</strong>
+                                <span class="text-{{ $product->is_in_stock ? 'success' : 'danger' }} fw-bold">
+                                    {{ $product->is_in_stock ? 'In Stock' : 'Out of Stock' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-calendar text-primary me-3 fs-5"></i>
+                            <div>
+                                <strong class="d-block">Created</strong>
+                                <small class="text-muted">{{ optional($product->created_at)->format('M d, Y') ?? 'N/A' }}</small>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Quantity Selector -->
-                    <div class="d-flex align-items-center gap-3 mt-4 mb-3 flex-wrap">
-                        <label class="fw-semibold me-2 small">Quantity:</label>
-                        <div class="input-group" style="width: 130px;">
-                            <button class="btn btn-outline-dark" type="button" id="decreaseQty">-</button>
-                            <input type="text" class="form-control text-center" id="quantity" value="1">
-                            <button class="btn btn-outline-dark" type="button" id="increaseQty">+</button>
+                    <div class="d-flex align-items-center gap-3 mt-4 mb-4 flex-wrap">
+                        <label class="fw-bold mb-0">Quantity:</label>
+                        <div class="input-group" style="width: 150px;">
+                            <button class="btn btn-outline-dark rounded-start-pill" type="button" id="decreaseQty">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="text" class="form-control text-center fw-bold" id="quantity" value="1" style="border-left: none; border-right: none;">
+                            <button class="btn btn-outline-dark rounded-end-pill" type="button" id="increaseQty">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
                     </div>
 
                     <!-- Buttons -->
-                    <div class="d-flex flex-wrap gap-2 gap-md-3">
-                        <button class="btn btn-dark rounded-pill px-4" id="addToCartBtn" {{ !$product->is_in_stock ? 'disabled' : '' }}>{{ $product->is_in_stock ? 'Add to Cart' : 'Out of Stock' }}</button>
-                        <button class="btn btn-outline-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#shareModal">Share</button>
-                        <button class="btn btn-outline-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#askQuestionModal">Ask a Question</button>
-                        <button class="btn btn-outline-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#faqModal">FAQ</button>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <button class="btn btn-dark btn-lg rounded-pill px-5 py-3 shadow flex-grow-1" id="addToCartBtn" {{ !$product->is_in_stock ? 'disabled' : '' }}>
+                            <i class="fas fa-shopping-cart me-2"></i>{{ $product->is_in_stock ? 'Add to Cart' : 'Out of Stock' }}
+                        </button>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-dark rounded-pill px-4 py-2" data-bs-toggle="modal" data-bs-target="#shareModal">
+                            <i class="fas fa-share-alt me-2"></i>Share
+                        </button>
+                        <button class="btn btn-outline-dark rounded-pill px-4 py-2" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                            <i class="fas fa-question-circle me-2"></i>Ask a Question
+                        </button>
+                        <button class="btn btn-outline-dark rounded-pill px-4 py-2" data-bs-toggle="modal" data-bs-target="#faqModal">
+                            <i class="fas fa-info-circle me-2"></i>FAQ
+                        </button>
                     </div>
 
                     <!-- Success/Error Messages -->
@@ -77,22 +120,30 @@
 
             <!-- Tabs Section -->
             <div class="mt-5">
-                <ul class="nav nav-tabs flex-wrap" id="productTabs" role="tablist">
+                <ul class="nav nav-pills nav-justified flex-wrap mb-4" id="productTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab">Description</button>
+                        <button class="nav-link active rounded-pill me-2 mb-2" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab">
+                            <i class="fas fa-file-alt me-2"></i>Description
+                        </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab">Delivery Policy</button>
+                        <button class="nav-link rounded-pill me-2 mb-2" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab">
+                            <i class="fas fa-truck me-2"></i>Delivery Policy
+                        </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab">Shipping & Return</button>
+                        <button class="nav-link rounded-pill me-2 mb-2" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab">
+                            <i class="fas fa-undo me-2"></i>Shipping & Return
+                        </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews</button>
+                        <button class="nav-link rounded-pill mb-2" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                            <i class="fas fa-star me-2"></i>Reviews ({{ $reviewsCount }})
+                        </button>
                     </li>
                 </ul>
 
-                <div class="tab-content border border-top-0 bg-white p-4" id="productTabsContent">
+                <div class="tab-content border-0 bg-white shadow rounded p-4 p-md-5" id="productTabsContent">
                     <div class="tab-pane fade show active" id="desc" role="tabpanel">
                         <p>{{ $product->description ?? 'No additional details available.' }}</p>
                     </div>
@@ -116,13 +167,16 @@
                                     <p class="text-muted small mb-0">{{ $review->created_at->diffForHumans() }}</p>
                                     <p class="mb-2 mt-2">{{ $review->comment }}</p>
                                     @if($review->image_url)
-                                        <div class="mt-2">
-                                            <img src="{{ $review->image_url }}" alt="Review image" class="img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover; width: 250px; height: 250px;">
+                                        <div class="mt-3">
+                                            <img src="{{ $review->image_url }}" alt="Review image" class="img-thumbnail rounded shadow-sm" style="max-width: 300px; max-height: 300px; object-fit: cover; width: 300px; height: 300px;">
                                         </div>
                                     @endif
                                 </div>
                             @empty
-                                <p class="text-muted mb-0">No reviews yet. Be the first to share your thoughts!</p>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted lead mb-4">No reviews yet. Be the first to share your thoughts!</p>
+                                </div>
                             @endforelse
                         </div>
                     </div>
@@ -132,62 +186,79 @@
             <!-- Reviews Section -->
             <div class="container mt-5">
                 @if(session('status'))
-                    <div class="alert alert-success">{{ session('status') }}</div>
+                    <div class="alert alert-success rounded">{{ session('status') }}</div>
                 @endif
 
-                <form action="{{ route('products.reviews.store', $product) }}" method="POST" class="p-4 shadow-sm rounded-3 bg-white" enctype="multipart/form-data">
+                <form action="{{ route('products.reviews.store', $product) }}" method="POST" class="card border-0 shadow p-4 p-md-5" enctype="multipart/form-data">
                     @csrf
-                    <h3 class="mb-4 fw-bold">Customer Reviews</h3>
-                    <h4 class="mb-3 fw-semibold">Write a Review</h4>
-
-                    <div class="mb-3">
-                        <label for="reviewName" class="form-label fw-bold">Your Name</label>
-                        <input type="text" id="reviewName" name="author_name" class="form-control @error('author_name') is-invalid @enderror" value="{{ old('author_name') }}" required>
-                        @error('author_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="text-center mb-4">
+                        <span class="badge bg-dark text-white px-3 py-2 mb-3">Write a Review</span>
+                        <h3 class="fw-bold display-5 mb-2">Customer Reviews</h3>
+                        <p class="text-muted">Share your experience with this product</p>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="reviewRating" class="form-label fw-bold">Rating</label>
-                        <select id="reviewRating" name="rating" class="form-select @error('rating') is-invalid @enderror" required>
-                            <option value="">Select Rating</option>
-                            @for($i = 5; $i >= 1; $i--)
-                                <option value="{{ $i }}" @selected(old('rating') == $i)>
-                                    {{ str_repeat('★', $i) }}{{ str_repeat('☆', 5 - $i) }}
-                                </option>
-                            @endfor
-                        </select>
-                        @error('rating')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label for="reviewName" class="form-label fw-bold mb-2">
+                                <i class="fas fa-user me-2 text-primary"></i>Your Name
+                            </label>
+                            <input type="text" id="reviewName" name="author_name" class="form-control form-control-lg rounded-pill @error('author_name') is-invalid @enderror" value="{{ old('author_name') }}" placeholder="Enter your name" required>
+                            @error('author_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="reviewRating" class="form-label fw-bold mb-2">
+                                <i class="fas fa-star me-2 text-primary"></i>Rating
+                            </label>
+                            <select id="reviewRating" name="rating" class="form-select form-select-lg rounded-pill @error('rating') is-invalid @enderror" required>
+                                <option value="">Select Rating</option>
+                                @for($i = 5; $i >= 1; $i--)
+                                    <option value="{{ $i }}" @selected(old('rating') == $i)>
+                                        {{ str_repeat('★', $i) }}{{ str_repeat('☆', 5 - $i) }} {{ $i }} Star{{ $i > 1 ? 's' : '' }}
+                                    </option>
+                                @endfor
+                            </select>
+                            @error('rating')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="reviewComment" class="form-label fw-bold">Comment</label>
-                        <textarea id="reviewComment" name="comment" class="form-control @error('comment') is-invalid @enderror" rows="4" required>{{ old('comment') }}</textarea>
+                    <div class="mb-4">
+                        <label for="reviewComment" class="form-label fw-bold mb-2">
+                            <i class="fas fa-comment me-2 text-primary"></i>Comment
+                        </label>
+                        <textarea id="reviewComment" name="comment" class="form-control rounded @error('comment') is-invalid @enderror" rows="5" placeholder="Share your thoughts about this product..." required>{{ old('comment') }}</textarea>
                         @error('comment')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="reviewImage" class="form-label fw-bold">Upload Image (Optional)</label>
-                        <input type="file" id="reviewImage" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
-                        <small class="form-text text-muted">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 5MB</small>
+                    <div class="mb-4">
+                        <label for="reviewImage" class="form-label fw-bold mb-2">
+                            <i class="fas fa-image me-2 text-primary"></i>Upload Image (Optional)
+                        </label>
+                        <input type="file" id="reviewImage" name="image" class="form-control form-control-lg rounded-pill @error('image') is-invalid @enderror" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                        <small class="form-text text-muted mt-2 d-block">
+                            <i class="fas fa-info-circle me-1"></i>Accepted formats: JPEG, PNG, GIF, WebP. Max size: 5MB
+                        </small>
                         @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         
                         <!-- Image Preview -->
                         <div id="imagePreviewContainer" class="mt-3" style="display: none;">
-                            <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-width: 300px; max-height: 300px; object-fit: contain;">
-                            <button type="button" id="removeImagePreview" class="btn btn-sm btn-danger mt-2">Remove Image</button>
+                            <img id="imagePreview" src="" alt="Preview" class="img-thumbnail rounded shadow-sm" style="max-width: 300px; max-height: 300px; object-fit: contain;">
+                            <button type="button" id="removeImagePreview" class="btn btn-sm btn-danger rounded-pill mt-2">
+                                <i class="fas fa-trash me-1"></i>Remove Image
+                            </button>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn text-white px-4 py-2" style="background-color: black;">
-                        Submit Review
+                    <button type="submit" class="btn btn-dark btn-lg w-100 rounded-pill py-3 shadow fw-bold">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Review
                     </button>
                 </form>
             </div>

@@ -3,10 +3,13 @@
 @section('title', 'Your Cart - Emilliä Jewellery')
 
 @section('content')
-    <br><br><br><br>
-    <section class="cart-section py-5 bg-light">
+    <section class="py-5 bg-light">
         <div class="container">
-            <h2 class="fw-bold mb-4 text-center">🛍️ Your Shopping Cart</h2>
+            <div class="text-center mb-5">
+                <span class="badge bg-dark text-white px-3 py-2 mb-3">Shopping Cart</span>
+                <h2 class="fw-bold display-4 mb-3">Your Shopping Cart</h2>
+                <p class="lead text-muted">Review your items before checkout</p>
+            </div>
 
             @if(session('success'))
                 <div class="alert alert-success text-center auto-dismiss" data-dismiss-time="8000">
@@ -29,27 +32,31 @@
 
             @if(empty($cart))
                 <div class="text-center py-5">
-                    <h5 class="text-muted">Your cart is empty.</h5>
-                    <a href="{{ url('/products') }}" class="btn btn-dark rounded-pill mt-3 px-4">Continue Shopping</a>
+                    <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+                    <h4 class="fw-bold mb-2">Your cart is empty</h4>
+                    <p class="text-muted mb-4">Start adding items to your cart!</p>
+                    <a href="{{ url('/products') }}" class="btn btn-dark btn-lg rounded-pill px-5">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
                 </div>
             @else
                 <div class="table-responsive">
-                    <table class="table align-middle bg-white shadow-sm rounded-3 overflow-hidden">
+                    <table class="table align-middle bg-white shadow rounded overflow-hidden">
                         <thead class="table-dark">
                         <tr>
-                            <th scope="col">Product</th>
+                            <th scope="col" class="ps-4">Product</th>
                             <th scope="col">Name</th>
                             <th scope="col">Price</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Subtotal</th>
-                            <th scope="col" class="text-center">Action</th>
+                            <th scope="col" class="text-center pe-4">Action</th>
                         </tr>
                         </thead>
                         <tbody>
                 @foreach($cart as $item)
                             <tr class="{{ !($item['is_in_stock'] ?? true) ? 'table-warning' : '' }}">
-                                <td class="text-center">
-                            <img src="{{ $item['image_url'] }}" alt="{{ $item['name'] }}" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                <td class="text-center ps-4">
+                            <img src="{{ $item['image_url'] }}" alt="{{ $item['name'] }}" class="img-fluid rounded shadow-sm" style="width: 90px; height: 90px; object-fit: cover;">
                                 </td>
                                 <td class="fw-semibold">
                                     {{ $item['name'] }}
@@ -84,16 +91,23 @@
                     </table>
                 </div>
 
-                <div class="text-end mt-4">
-                    <h4 class="fw-bold">Total: PKR {{ number_format($total, 2) }}</h4>
+                <div class="bg-white shadow rounded p-4 mt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="fw-bold mb-0">Total Amount:</h4>
+                        <h3 class="fw-bold text-primary mb-0">PKR {{ number_format($total, 2) }}</h3>
+                    </div>
                 </div>
 
-                <div class="d-flex flex-wrap justify-content-between mt-4">
-                    <a href="{{ url('/products') }}" class="btn btn-outline-dark rounded-pill px-4 mb-2">← Continue Shopping</a>
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4">
+                    <a href="{{ url('/products') }}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
 
-                    <form action="{{ route('cart.clear') }}" method="POST">
+                    <form action="{{ route('cart.clear') }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-outline-danger rounded-pill px-4 mb-2">Clear Cart</button>
+                        <button type="submit" class="btn btn-outline-danger btn-lg rounded-pill px-5" onclick="return confirm('Are you sure you want to clear your cart?')">
+                            <i class="fas fa-trash me-2"></i>Clear Cart
+                        </button>
                     </form>
 
                     @php
@@ -102,11 +116,13 @@
                         });
                     @endphp
                     @if($hasOutOfStock)
-                        <div class="alert alert-warning mb-3">
-                            <strong>⚠️ Warning:</strong> Some items in your cart are out of stock. Please remove them before proceeding to checkout.
+                        <div class="alert alert-warning rounded mb-3 w-100">
+                            <strong><i class="fas fa-exclamation-triangle me-2"></i>Warning:</strong> Some items in your cart are out of stock. Please remove them before proceeding to checkout.
                         </div>
                     @endif
-                    <a href="{{ route('checkout') }}" class="btn btn-dark rounded-pill px-4 mb-2 {{ $hasOutOfStock ? 'disabled' : '' }}" {{ $hasOutOfStock ? 'onclick="return false;"' : '' }}>Proceed to Checkout</a>
+                    <a href="{{ route('checkout') }}" class="btn btn-dark btn-lg rounded-pill px-5 shadow {{ $hasOutOfStock ? 'disabled' : '' }}" {{ $hasOutOfStock ? 'onclick="return false;"' : '' }}>
+                        <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                    </a>
                 </div>
             @endif
         </div>

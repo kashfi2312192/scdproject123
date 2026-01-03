@@ -3,12 +3,12 @@
 @section('title', 'Emilliä - Products')
 
 @section('content')
-    <section class="py-5 bg-light" style="margin-top: 5rem;">
+    <section class="py-5 bg-light">
         <div class="container">
             <div class="text-center mb-5">
-                <p class="text-uppercase text-muted small mb-2">Shop the new arrivals</p>
-                <h1 class="fw-bold">Our Collection</h1>
-                <p class="text-muted">Discover the perfect piece to express your unique style.</p>
+                <span class="badge bg-dark text-white px-3 py-2 mb-3">Shop the new arrivals</span>
+                <h1 class="fw-bold display-4 mb-3">Our Collection</h1>
+                <p class="lead text-muted">Discover the perfect piece to express your unique style.</p>
             </div>
 
         
@@ -75,27 +75,39 @@
 
             @if($products->isEmpty())
                 <div class="text-center py-5">
-                    <h4 class="fw-semibold">No products found</h4>
-                    <p class="text-muted">Try a different search term or come back soon!</p>
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="fw-bold mb-2">No products found</h4>
+                    <p class="text-muted mb-4">Try a different search term or come back soon!</p>
+                    <a href="{{ route('products') }}" class="btn btn-dark rounded-pill px-4">View All Products</a>
                 </div>
             @else
                 <div class="row g-4">
                     @foreach($products as $product)
                         <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="card border-0 shadow-sm h-100 position-relative">
-                                <a href="{{ route('products.show', $product) }}" class="stretched-link"></a>
-                                <div class="ratio ratio-1x1 bg-white">
-                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid rounded-top object-fit-cover">
+                            <a href="{{ route('products.show', $product) }}" class="text-decoration-none text-dark">
+                                <div class="card border-0 shadow h-100 overflow-hidden position-relative" style="cursor: pointer; transition: transform 0.2s;">
+                                    <div class="position-relative">
+                                        <div class="ratio ratio-1x1 bg-light">
+                                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid object-fit-cover">
+                                        </div>
+                                        <div class="position-absolute top-0 end-0 m-2">
+                                            @if($product->category_name)
+                                                <span class="badge bg-dark">{{ $product->category_name }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="fw-bold mb-2">{{ $product->name }}</h5>
+                                        <p class="text-muted small flex-grow-1 mb-3">{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful jewelry piece', 90) }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold fs-5 text-dark">PKR {{ number_format($product->price, 2) }}</span>
+                                            <span class="btn btn-dark btn-sm rounded-pill">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="fw-semibold">{{ $product->name }}</h5>
-                                    @if($product->category_name)
-                                        <span class="badge bg-secondary mb-2" style="width: fit-content;">{{ $product->category_name }}</span>
-                                    @endif
-                                    <p class="text-muted small flex-grow-1">{{ \Illuminate\Support\Str::limit($product->description, 90) }}</p>
-                                    <span class="fw-bold mt-3">PKR {{ number_format($product->price, 2) }}</span>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     @endforeach
                 </div>
@@ -232,6 +244,11 @@
             });
         })();
     </script>
+    <style>
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
 @endsection
 
 

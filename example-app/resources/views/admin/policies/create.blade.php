@@ -3,30 +3,37 @@
 @section('title', 'Create Policy')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="mb-1">Create Policy</h2>
-            <p class="text-muted mb-0">Add a new policy or customer care page.</p>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+        <div class="mb-3 mb-md-0">
+            <span class="badge bg-dark text-white px-3 py-2 mb-3">Create Policy</span>
+            <h1 class="fw-bold display-5 mb-2">Create Policy</h1>
+            <p class="lead text-muted">Add a new policy or customer care page.</p>
         </div>
-        <a href="{{ route('admin.policies.index') }}" class="btn btn-outline-secondary">Back to List</a>
+        <a href="{{ route('admin.policies.index') }}" class="btn btn-outline-dark rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="card border-0 shadow">
+        <div class="card-body p-4 p-md-5">
             <form action="{{ route('admin.policies.store') }}" method="POST">
                 @csrf
 
-                <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
+                <div class="mb-4">
+                    <label for="title" class="form-label fw-bold mb-2">
+                        <i class="fas fa-heading me-2 text-primary"></i>Title
+                    </label>
+                    <input type="text" class="form-control form-control-lg rounded-pill @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" placeholder="Enter policy title" required>
                     @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label for="type" class="form-label">Type</label>
-                    <select class="form-select @error('type') is-invalid @enderror" id="type" name="type">
+                <div class="mb-4">
+                    <label for="type" class="form-label fw-bold mb-2">
+                        <i class="fas fa-list me-2 text-primary"></i>Type
+                    </label>
+                    <select class="form-select form-select-lg rounded-pill @error('type') is-invalid @enderror" id="type" name="type">
                         <option value="">Select Type</option>
                         <option value="policy" {{ old('type') == 'policy' ? 'selected' : '' }}>Our Policies</option>
                         <option value="customer_care" {{ old('type') == 'customer_care' ? 'selected' : '' }}>Customer Care</option>
@@ -36,15 +43,19 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label for="content" class="form-label">Content</label>
-                    <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="10" required>{{ old('content') }}</textarea>
+                <div class="mb-4">
+                    <label for="content" class="form-label fw-bold mb-2">
+                        <i class="fas fa-file-alt me-2 text-primary"></i>Content
+                    </label>
+                    <textarea class="form-control rounded @error('content') is-invalid @enderror" id="content" name="content" rows="10" placeholder="Enter policy content..." required>{{ old('content') }}</textarea>
                     @error('content')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-dark">Create Policy</button>
+                <button type="submit" class="btn btn-dark btn-lg rounded-pill px-5 py-3 shadow">
+                    <i class="fas fa-plus me-2"></i>Create Policy
+                </button>
             </form>
         </div>
     </div>

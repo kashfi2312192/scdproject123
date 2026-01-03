@@ -92,7 +92,7 @@
 </header>
 
 <!-- ===== Page Content ===== -->
-<main >
+<main style="padding-top: 76px;">
     @yield('content')
 </main>
 
@@ -101,7 +101,7 @@
     <div class="container">
         <div class="row g-4 text-center text-md-start">
             <div class="col-12 col-md-3">
-                <h5 class="fw-bold mb-3">Contact Us</h5>
+                <h5 class="fw-bold mb-3"><i class="fas fa-map-marker-alt me-2"></i>Contact Us</h5>
                 @php
                     $contactInfo = [
                         'address' => \App\Models\ContactInfo::getValue('address', 'PO Box 1622 Bamboo Street West'),
@@ -110,14 +110,14 @@
                         'opening_hours' => \App\Models\ContactInfo::getValue('opening_hours', '9:00AM - 10:00PM'),
                     ];
                 @endphp
-                <p class="mb-1">📍 {{ $contactInfo['address'] }}</p>
-                <p class="mb-1">📞 {{ $contactInfo['phone'] }}</p>
-                <p class="mb-1">📧 {{ $contactInfo['email'] }}</p>
-                <p>🕘 {{ $contactInfo['opening_hours'] }}</p>
+                <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-muted"></i>{{ $contactInfo['address'] }}</p>
+                <p class="mb-2"><i class="fas fa-phone me-2 text-muted"></i><a href="tel:{{ $contactInfo['phone'] }}" class="text-decoration-none text-dark">{{ $contactInfo['phone'] }}</a></p>
+                <p class="mb-2"><i class="fas fa-envelope me-2 text-muted"></i><a href="mailto:{{ $contactInfo['email'] }}" class="text-decoration-none text-dark">{{ $contactInfo['email'] }}</a></p>
+                <p class="mb-0"><i class="fas fa-clock me-2 text-muted"></i>{{ $contactInfo['opening_hours'] }}</p>
             </div>
 
             <div class="col-6 col-md-3">
-                <h5 class="fw-bold mb-3">Our Policies</h5>
+                <h5 class="fw-bold mb-3"><i class="fas fa-file-contract me-2"></i>Our Policies</h5>
                 <ul class="list-unstyled">
                     @php
                         $policies = \App\Models\Policy::where(function($query) {
@@ -125,29 +125,29 @@
                         })->get();
                     @endphp
                     @forelse($policies as $policy)
-                        <li><a href="{{ route('policy.show', $policy->slug) }}" class="text-decoration-none text-dark">{{ $policy->title }}</a></li>
+                        <li class="mb-2"><a href="{{ route('policy.show', $policy->slug) }}" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>{{ $policy->title }}</a></li>
                     @empty
-                        <li><a href="#" class="text-decoration-none text-dark">Shipping & Delivery</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Returns Policy</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Terms & Conditions</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>Shipping & Delivery</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>Returns Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>Terms & Conditions</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>Privacy Policy</a></li>
                     @endforelse
                 </ul>
             </div>
 
             <div class="col-6 col-md-3">
-                <h5 class="fw-bold mb-3">Customer Care</h5>
+                <h5 class="fw-bold mb-3"><i class="fas fa-headset me-2"></i>Customer Care</h5>
                 <ul class="list-unstyled">
                     @php
                         $customerCare = \App\Models\Policy::where('type', 'customer_care')->get();
                     @endphp
                     @forelse($customerCare as $policy)
-                        <li><a href="{{ route('policy.show', $policy->slug) }}" class="text-decoration-none text-dark">{{ $policy->title }}</a></li>
+                        <li class="mb-2"><a href="{{ route('policy.show', $policy->slug) }}" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>{{ $policy->title }}</a></li>
                     @empty
-                        <li><a href="#" class="text-decoration-none text-dark">FAQs</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Terms of Service</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Gift Card</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>FAQs</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>Terms of Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-dark"><i class="fas fa-chevron-right me-2 small text-muted"></i>Gift Card</a></li>
                     @endforelse
                 </ul>
             </div>
