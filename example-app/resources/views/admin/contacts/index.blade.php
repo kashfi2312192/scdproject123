@@ -23,6 +23,7 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Message</th>
+                                <th>Product</th>
                                 <th>Date</th>
                                 <th class="text-end">Actions</th>
                             </tr>
@@ -34,6 +35,13 @@
                                     <td>{{ $contact->email }}</td>
                                     <td>{{ $contact->phone ?? 'N/A' }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($contact->message, 50) }}</td>
+                                    <td>
+                                        @if($contact->product_url)
+                                            <a href="{{ $contact->product_url }}" target="_blank" class="btn btn-sm btn-outline-primary">View Product</a>
+                                        @else
+                                            <span class="text-muted">N/A</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $contact->created_at->format('M d, Y') }}</td>
                                     <td class="text-end">
                                         <a href="{{ route('admin.contacts.show', $contact) }}" class="btn btn-sm btn-outline-secondary me-2">View</a>

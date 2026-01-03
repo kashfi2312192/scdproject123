@@ -97,54 +97,33 @@
                 <p class="text-muted">Click on a category to explore our curated jewelry pieces.</p>
             </div>
 
+            @php
+                $categories = \App\Models\Category::withCount('products')->orderBy('name')->get();
+                $categoryImages = [
+                    'Bracelets' => 'bracelet.webp',
+                    'Rings' => 'rings.avif',
+                    'Earrings' => 'earings.webp',
+                    'Necklaces' => 'necklace.avif',
+                ];
+            @endphp
+
             <div class="row g-4 justify-content-center">
-                <div class="col-6 col-sm-6 col-md-3">
-                    <a href="{{ route('products', ['category' => 'Bracelets']) }}" class="text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm hover-scale">
-                            <img src="{{ asset('img/bracelet.webp') }}" class="card-img-top rounded-top" alt="Bracelet">
-                            <div class="card-body">
-                                <h5 class="fw-bold mb-1">Bracelet</h5>
-                                <p class="text-muted small mb-0">12 products</p>
+                @foreach($categories as $category)
+                    <div class="col-6 col-sm-6 col-md-3">
+                        <a href="{{ route('products', ['category' => $category->id]) }}" class="text-decoration-none text-dark">
+                            <div class="card border-0 shadow-sm hover-scale">
+                                <img src="{{ asset('img/' . ($categoryImages[$category->name] ?? 'logo.webp')) }}" 
+                                     class="card-img-top rounded-top" 
+                                     alt="{{ $category->name }}"
+                                     style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="fw-bold mb-1">{{ $category->name }}</h5>
+                                    <p class="text-muted small mb-0">{{ $category->products_count }} {{ \Illuminate\Support\Str::plural('product', $category->products_count) }}</p>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-6 col-sm-6 col-md-3">
-                    <a href="{{ route('products', ['category' => 'Rings']) }}" class="text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm hover-scale">
-                            <img src="{{ asset('img/rings.avif') }}" class="card-img-top rounded-top" alt="Rings">
-                            <div class="card-body">
-                                <h5 class="fw-bold mb-1">Rings</h5>
-                                <p class="text-muted small mb-0">15 products</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-6 col-sm-6 col-md-3">
-                    <a href="{{ route('products', ['category' => 'Earrings']) }}" class="text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm hover-scale">
-                            <img src="{{ asset('img/earings.webp') }}" class="card-img-top rounded-top" alt="Earrings">
-                            <div class="card-body">
-                                <h5 class="fw-bold mb-1">Earrings</h5>
-                                <p class="text-muted small mb-0">30 products</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-6 col-sm-6 col-md-3">
-                    <a href="{{ route('products', ['category' => 'Necklaces']) }}" class="text-decoration-none text-dark">
-                        <div class="card border-0 shadow-sm hover-scale">
-                            <img src="{{ asset('img/necklace.avif') }}" class="card-img-top rounded-top" alt="Necklace">
-                            <div class="card-body">
-                                <h5 class="fw-bold mb-1">Necklace</h5>
-                                <p class="text-muted small mb-0">18 products</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>

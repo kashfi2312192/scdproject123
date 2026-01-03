@@ -9,7 +9,22 @@
             <h2 class="fw-bold mb-4 text-center">🛍️ Your Shopping Cart</h2>
 
             @if(session('success'))
-                <div class="alert alert-success text-center">{{ session('success') }}</div>
+                <div class="alert alert-success text-center auto-dismiss" data-dismiss-time="8000">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger text-center auto-dismiss" data-dismiss-time="8000">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if(isset($removalMessage) && $removalMessage)
+                <div class="alert alert-warning auto-dismiss" data-dismiss-time="8000">
+                    <strong>⚠️ Cart Updated:</strong>
+                    <pre class="mb-0" style="white-space: pre-wrap;">{{ $removalMessage }}</pre>
+                </div>
             @endif
 
             @if(empty($cart))
@@ -32,18 +47,27 @@
                         </thead>
                         <tbody>
                 @foreach($cart as $item)
-                            <tr>
+                            <tr class="{{ !($item['is_in_stock'] ?? true) ? 'table-warning' : '' }}">
                                 <td class="text-center">
                             <img src="{{ $item['image_url'] }}" alt="{{ $item['name'] }}" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
                                 </td>
-                                <td class="fw-semibold">{{ $item['name'] }}</td>
+                                <td class="fw-semibold">
+                                    {{ $item['name'] }}
+                                    @if(!($item['is_in_stock'] ?? true))
+                                        <br><small class="text-danger fw-bold">⚠️ Out of Stock</small>
+                                    @endif
+                                </td>
                                 <td>PKR {{ number_format($item['price'], 2) }}</td>
                                 <td>
-                                    <div class="d-flex align-items-center justify-content-left">
-                                <button class="btn btn-sm btn-outline-dark me-2 qty-btn" data-id="{{ $item['id'] }}" data-action="decrease">-</button>
-                                <input type="text" value="{{ $item['quantity'] }}" class="form-control text-center qty-input" style="width: 50px;" data-id="{{ $item['id'] }}">
-                                <button class="btn btn-sm btn-outline-dark ms-2 qty-btn" data-id="{{ $item['id'] }}" data-action="increase">+</button>
-                                    </div>
+                                    @if(!($item['is_in_stock'] ?? true))
+                                        <div class="text-danger small">Cannot update quantity</div>
+                                    @else
+                                        <div class="d-flex align-items-center justify-content-left">
+                                    <button class="btn btn-sm btn-outline-dark me-2 qty-btn" data-id="{{ $item['id'] }}" data-action="decrease">-</button>
+                                    <input type="text" value="{{ $item['quantity'] }}" class="form-control text-center qty-input" style="width: 50px;" data-id="{{ $item['id'] }}">
+                                    <button class="btn btn-sm btn-outline-dark ms-2 qty-btn" data-id="{{ $item['id'] }}" data-action="increase">+</button>
+                                        </div>
+                                    @endif
                                 </td>
 
                                 <td class="fw-bold">PKR {{ number_format($item['price'] * $item['quantity'], 2) }}</td>
@@ -72,13 +96,35 @@
                         <button type="submit" class="btn btn-outline-danger rounded-pill px-4 mb-2">Clear Cart</button>
                     </form>
 
-                    <a href="{{ route('checkout') }}" class="btn btn-dark rounded-pill px-4 mb-2">Proceed to Checkout</a>
+                    @php
+                        $hasOutOfStock = collect($cart)->contains(function($item) {
+                            return !($item['is_in_stock'] ?? true);
+                        });
+                    @endphp
+                    @if($hasOutOfStock)
+                        <div class="alert alert-warning mb-3">
+                            <strong>⚠️ Warning:</strong> Some items in your cart are out of stock. Please remove them before proceeding to checkout.
+                        </div>
+                    @endif
+                    <a href="{{ route('checkout') }}" class="btn btn-dark rounded-pill px-4 mb-2 {{ $hasOutOfStock ? 'disabled' : '' }}" {{ $hasOutOfStock ? 'onclick="return false;"' : '' }}>Proceed to Checkout</a>
                 </div>
             @endif
         </div>
     </section>
 
     <script>
+        // Auto-dismiss alerts after specified time
+        document.querySelectorAll('.auto-dismiss').forEach(alert => {
+            const dismissTime = parseInt(alert.getAttribute('data-dismiss-time')) || 8000;
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    alert.remove();
+                }, 500);
+            }, dismissTime);
+        });
+
         document.querySelectorAll('.qty-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const productId = this.dataset.id;

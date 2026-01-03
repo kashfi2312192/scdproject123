@@ -28,6 +28,8 @@ class StoreProductRequest extends FormRequest
             'image' => ['nullable', 'image', 'max:2048'],
             'is_in_stock' => ['nullable', 'boolean'],
             'discount_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'tags' => ['nullable', 'string'],
         ];
     }
 }

@@ -11,5 +11,18 @@ class Contact extends Model
         'email',
         'phone',
         'message',
+        'product_id',
+        'product_url',
+        'reply',
+        'replied_at',
     ];
+
+    protected $casts = [
+        'replied_at' => 'datetime',
+    ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

@@ -12,19 +12,45 @@ class CartController extends Controller
 {
     public function index(): View
     {
-        $cart = collect(session()->get('cart', []))
-            ->map(function ($item) {
-                $item['image_url'] = $item['image_url'] ?? $this->resolveImageUrl($item['image'] ?? null);
+        $cart = session()->get('cart', []);
+        $removedItems = [];
+        $removedMessages = [];
 
-                return $item;
-            })
-            ->toArray();
+        // Check each item and remove if out of stock or deleted
+        foreach ($cart as $key => $item) {
+            $product = Product::find($item['id']);
+            
+            if (!$product) {
+                // Product was deleted
+                $removedItems[] = $item['name'] ?? 'Unknown Product';
+                unset($cart[$key]);
+                $removedMessages[] = "Product '{$item['name']}' has been removed from the store and was removed from your cart.";
+            } elseif (!$product->is_in_stock) {
+                // Product is out of stock
+                $removedItems[] = $item['name'];
+                unset($cart[$key]);
+                $removedMessages[] = "Product '{$item['name']}' is now out of stock and was removed from your cart.";
+            } else {
+                // Product exists and is in stock - update image URL
+                $cart[$key]['image_url'] = $item['image_url'] ?? $this->resolveImageUrl($item['image'] ?? null);
+                $cart[$key]['is_in_stock'] = $product->is_in_stock;
+                $cart[$key]['product_name'] = $product->name;
+            }
+        }
 
+        // Save updated cart
         session()->put('cart', $cart);
+
+        // Prepare message if items were removed
+        $removalMessage = null;
+        if (!empty($removedItems)) {
+            $removalMessage = "⚠️ Some items were removed from your cart:\n" . implode("\n", $removedMessages);
+        }
 
         return view('cart', [
             'cart' => $cart,
             'total' => $this->calculateTotal($cart),
+            'removalMessage' => $removalMessage,
         ]);
     }
 
@@ -37,6 +63,20 @@ class CartController extends Controller
 
         $product = Product::findOrFail($validated['product_id']);
         $quantity = (int) ($validated['quantity'] ?? 1);
+
+        // Check if product is in stock
+        if (!$product->is_in_stock) {
+            $message = "❌ This product is currently out of stock and cannot be added to cart.";
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                ], 400);
+            }
+
+            return redirect()->back()->with('error', $message);
+        }
 
         $cart = session()->get('cart', []);
         $key = (string) $product->id;
@@ -51,6 +91,7 @@ class CartController extends Controller
                 'image' => $product->image,
                 'image_url' => $product->image_url,
                 'quantity' => $quantity,
+                'is_in_stock' => $product->is_in_stock,
             ];
         }
 
@@ -103,7 +144,19 @@ class CartController extends Controller
             ], 404);
         }
 
+        // Check if product is still in stock
+        $product = Product::find($validated['product_id']);
+        if ($product && !$product->is_in_stock) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This product is out of stock. Quantity cannot be updated.',
+            ], 400);
+        }
+
         $cart[$key]['quantity'] = $validated['quantity'];
+        if ($product) {
+            $cart[$key]['is_in_stock'] = $product->is_in_stock;
+        }
         session()->put('cart', $cart);
 
         return response()->json([

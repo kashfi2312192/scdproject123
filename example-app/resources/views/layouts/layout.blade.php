@@ -47,9 +47,6 @@
                     <li class="nav-item">
                         <a href="{{ route('contactus') }}" class="nav-link {{ request()->routeIs('contactus') ? 'active' : '' }}">Contact</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ url('/admin') }}" class="nav-link">Admin</a>
-                    </li>
                 </ul>
             </div>
 
@@ -64,6 +61,31 @@
                     @endif
                 </a>
 
+                @auth
+                    <div class="dropdown">
+                        <button class="btn btn-link text-white text-decoration-none dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            @if(auth()->user()->is_admin)
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            @else
+                                <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            @endif
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm me-2">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-light btn-sm">Sign Up</a>
+                @endauth
             </div>
         </div>
     </nav>

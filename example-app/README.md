@@ -10,10 +10,16 @@ This is a Laravel-based e-commerce platform designed for jewelry retailers. The 
 
 - **Product Catalog**: Browse and view detailed product information with images, descriptions, pricing, and categories
 - **Shopping Cart**: Session-based shopping cart with add, remove, update, and clear functionality
-- **Checkout Process**: Complete order placement workflow
+- **Checkout Process**: Complete order placement workflow with order storage
+- **Order History**: Users can view their complete order history and order details
 - **Product Reviews**: Customers can leave reviews and ratings for products
+- **Category Management**: Products organized through category relationships with full CRUD operations
+- **AJAX Search**: Real-time product search with instant results dropdown
+- **Image Upload**: Full image upload functionality for products via admin panel
+- **RESTful API**: Complete CRUD APIs for Products, Orders, and Categories
+- **API Authentication**: Laravel Passport OAuth2 authentication for API access
 - **User Authentication**: Secure user registration and login powered by Laravel Breeze
-- **Admin Panel**: Separate admin authentication and dashboard for managing products
+- **Admin Panel**: Separate admin authentication and dashboard for managing products, orders, and categories
 - **Responsive Design**: Modern UI built with Tailwind CSS and Alpine.js
 - **Product Management**: Full CRUD operations for products including images, pricing, stock, categories, and tags
 
@@ -213,6 +219,7 @@ This starts:
 - **Register**: `http://localhost:8000/register`
 - **Login**: `http://localhost:8000/login`
 - **Dashboard**: `http://localhost:8000/dashboard` (after login)
+- **Order History**: `http://localhost:8000/orders` (after login)
 
 #### Admin Panel
 
@@ -331,15 +338,90 @@ example-app/
 │   ├── css/                     # Stylesheets
 │   └── js/                      # JavaScript files
 └── routes/
-    └── web.php                  # Web routes
+      └── web.php                  # Web routes
 ```
+
+## API Documentation
+
+The application includes a complete RESTful API with Laravel Passport authentication.
+
+### API Setup
+
+1. **Install Passport keys**:
+   ```bash
+   php artisan passport:install
+   ```
+
+2. **Create personal access client** (for testing):
+   ```bash
+   php artisan passport:client --personal
+   ```
+
+### API Endpoints
+
+#### Authentication
+- `POST /api/register` - Register new user
+- `POST /api/login` - Login and get access token
+- `GET /api/me` - Get authenticated user (requires auth)
+- `POST /api/logout` - Logout and revoke token (requires auth)
+
+#### Products (Public)
+- `GET /api/products` - List products (with pagination, search, filters)
+- `GET /api/products/{id}` - Get single product
+
+#### Products (Admin - requires auth + admin)
+- `POST /api/products` - Create product (with image upload)
+- `PUT /api/products/{id}` - Update product
+- `DELETE /api/products/{id}` - Delete product
+
+#### Categories (Public)
+- `GET /api/categories` - List categories
+- `GET /api/categories/{id}` - Get single category with products
+
+#### Categories (Admin - requires auth + admin)
+- `POST /api/categories` - Create category
+- `PUT /api/categories/{id}` - Update category
+- `DELETE /api/categories/{id}` - Delete category
+
+#### Orders (Authenticated)
+- `GET /api/orders` - List user's orders (or all orders for admin)
+- `GET /api/orders/{id}` - Get single order
+- `POST /api/orders` - Create new order
+
+#### Orders (Admin - requires auth + admin)
+- `PUT /api/orders/{id}` - Update order status
+- `DELETE /api/orders/{id}` - Delete order
+
+### Postman Collection
+
+A complete Postman collection is available at `postman_collection.json` with detailed setup instructions in `POSTMAN_SETUP.md`.
+
+**Quick Start:**
+1. Install Passport: `php artisan passport:install && php artisan passport:client --personal`
+2. Import `postman_collection.json` into Postman
+3. Use the "Login" request to authenticate - it automatically saves the token
+4. All authenticated requests will use the saved token
+
+**For detailed instructions, see `POSTMAN_SETUP.md`**
+
+### API Authentication
+
+All protected endpoints require a Bearer token in the Authorization header:
+```
+Authorization: Bearer {access_token}
+```
+
+Get the token by logging in via `/api/login` endpoint.
 
 ## Additional Notes
 
 - **Session Storage**: The shopping cart uses Laravel sessions. Ensure sessions are properly configured in `config/session.php`
-- **File Storage**: Product images can be stored in `public/img/products/` or uploaded via the admin panel
+- **File Storage**: Product images can be stored in `public/img/products/` or uploaded via the admin panel or API
 - **Queue Jobs**: If using queues, ensure the queue worker is running: `php artisan queue:work`
 - **Logs**: Application logs are stored in `storage/logs/laravel.log`
+- **API Rate Limiting**: API routes are rate-limited by default. Adjust in `app/Http/Kernel.php` if needed
+- **Order Storage**: All orders are stored in the database with complete order details and status tracking
+- **Category Relationships**: Products use category relationships (not string fields) for better data integrity
 
 ## Troubleshooting
 

@@ -8,6 +8,7 @@ class Order extends Model
 {
     protected $fillable = [
         'order_number',
+        'user_id',
         'name',
         'email',
         'phone',
@@ -22,4 +23,9 @@ class Order extends Model
         'items' => 'array',
         'total' => 'decimal:2',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

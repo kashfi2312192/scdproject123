@@ -10,6 +10,25 @@
 </div>
 
 <div class="mb-3">
+    <label for="category_id" class="form-label">Category</label>
+    <select class="form-select" id="category_id" name="category_id">
+        <option value="">Select a Category</option>
+        @foreach($categories ?? [] as $category)
+            <option value="{{ $category->id }}" {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                {{ $category->name }}
+            </option>
+        @endforeach
+    </select>
+    <small class="text-muted">Select the product category</small>
+</div>
+
+<div class="mb-3">
+    <label for="tags" class="form-label">Tags</label>
+    <input type="text" class="form-control" id="tags" name="tags" value="{{ old('tags', is_array($product->tags ?? null) ? implode(', ', $product->tags) : ($product->tags ?? '')) }}" placeholder="e.g., Gold, Silver, Diamond">
+    <small class="text-muted">Enter tags separated by commas (e.g., Gold, Silver, Diamond)</small>
+</div>
+
+<div class="mb-3">
     <label for="price" class="form-label">Price (PKR)</label>
     <input type="number" step="0.01" class="form-control" id="price" name="price" value="{{ old('price', $product->price ?? '') }}" required>
 </div>

@@ -37,8 +37,13 @@
         </div>
     </aside>
     <div class="flex-grow-1 d-flex flex-column">
-        <nav class="bg-white border-bottom py-3 px-4 d-flex justify-content-end">
-            <form action="{{ route('admin.logout') }}" method="POST">
+        <nav class="bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+            <div>
+                <a href="{{ route('homepage') }}" class="btn btn-link text-decoration-none">
+                    <i class="fas fa-home me-2"></i>Back to Site
+                </a>
+            </div>
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
             </form>

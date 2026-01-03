@@ -33,9 +33,45 @@
                 <div class="col-md-2 fw-semibold">Message:</div>
                 <div class="col-md-10">{{ $contact->message }}</div>
             </div>
+            @if($contact->product_url)
+            <div class="row mb-3">
+                <div class="col-md-2 fw-semibold">Product:</div>
+                <div class="col-md-10">
+                    <a href="{{ $contact->product_url }}" target="_blank" class="btn btn-sm btn-outline-primary">View Product →</a>
+                </div>
+            </div>
+            @endif
             <div class="row mb-3">
                 <div class="col-md-2 fw-semibold">Submitted:</div>
                 <div class="col-md-10">{{ $contact->created_at->format('F d, Y \a\t g:i A') }}</div>
+            </div>
+            @if($contact->reply)
+            <hr>
+            <div class="row mb-3">
+                <div class="col-md-2 fw-semibold">Reply:</div>
+                <div class="col-md-10">
+                    <div class="alert alert-info">
+                        <strong>Your Reply:</strong><br>
+                        {{ $contact->reply }}
+                    </div>
+                    <small class="text-muted">Replied on: {{ $contact->replied_at->format('F d, Y \a\t g:i A') }}</small>
+                </div>
+            </div>
+            @endif
+            <hr>
+            <div class="mb-4">
+                <h5 class="mb-3">Reply to Customer</h5>
+                <form action="{{ route('admin.contacts.reply', $contact) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="reply" class="form-label">Your Reply</label>
+                        <textarea class="form-control" id="reply" name="reply" rows="5" required>{{ old('reply', $contact->reply) }}</textarea>
+                        @error('reply')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-dark">Send Reply</button>
+                </form>
             </div>
             <hr>
             <form action="{{ route('admin.contacts.destroy', $contact) }}" method="POST" onsubmit="return confirm('Delete this contact message?')">

@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\ContactInfo;
-use App\Models\Policy;
-use App\Models\Product;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,43 +17,41 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/products', function (Request $request) {
-    $products = Product::query()
-        ->with('reviews')
-        ->when($request->filled('query'), function ($queryBuilder) use ($request) {
-            $search = $request->string('query');
+// Public routes
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{product}', [ProductController::class, 'show']);
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/{category}', [CategoryController::class, 'show']);
 
-            $queryBuilder->where(function ($inner) use ($search) {
-                $inner->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('short', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
-            });
-        })
-        ->latest()
-        ->paginate(12)
-        ->withQueryString();
+// Authentication routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
-    return response()->json($products);
+// Protected routes (require authentication)
+Route::middleware('auth:api')->group(function () {
+    // Auth routes
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Orders (authenticated users can create and view their own)
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{order}', [OrderController::class, 'show']);
+    Route::post('/orders', [OrderController::class, 'store']);
+
+    // Admin routes (require admin role)
+    Route::middleware('admin')->group(function () {
+        // Products CRUD
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+
+        // Categories CRUD
+        Route::post('/categories', [CategoryController::class, 'store']);
+        Route::put('/categories/{category}', [CategoryController::class, 'update']);
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+
+        // Orders management
+        Route::put('/orders/{order}', [OrderController::class, 'update']);
+        Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
+    });
 });
-
-Route::get('/products/{product}', function (Product $product) {
-    $product->load(['reviews' => function ($query) {
-        $query->latest();
-    }]);
-
-    return response()->json([
-        'data' => $product,
-        'average_rating' => round($product->reviews->avg('rating') ?? 0, 1),
-        'reviews_count' => $product->reviews->count(),
-    ]);
-});
-
-Route::get('/policies', function () {
-    return response()->json(Policy::all());
-});
-
-Route::get('/contact-info', function () {
-    return response()->json(ContactInfo::all());
-});
-
-

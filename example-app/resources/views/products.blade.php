@@ -30,12 +30,13 @@
 
                 <div class="col-6 col-md-2">
                     <label class="form-label fw-semibold d-md-none">Category</label>
-                    <select name="category" class="form-select rounded-pill">
+                    <select name="category" id="categorySelect" class="form-select rounded-pill">
                         <option value="">All Categories</option>
-                        <option value="Rings" {{ request('category')=='Rings' ? 'selected' : '' }}>Rings</option>
-                        <option value="Bracelets" {{ request('category')=='Bracelets' ? 'selected' : '' }}>Bracelets</option>
-                        <option value="Earrings" {{ request('category')=='Earrings' ? 'selected' : '' }}>Earrings</option>
-                        <option value="Necklaces" {{ request('category')=='Necklaces' ? 'selected' : '' }}>Necklaces</option>
+                        @foreach($categories ?? [] as $category)
+                            <option value="{{ $category->id }}" {{ (string)request('category') === (string)$category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -88,6 +89,9 @@
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="fw-semibold">{{ $product->name }}</h5>
+                                    @if($product->category_name)
+                                        <span class="badge bg-secondary mb-2" style="width: fit-content;">{{ $product->category_name }}</span>
+                                    @endif
                                     <p class="text-muted small flex-grow-1">{{ \Illuminate\Support\Str::limit($product->description, 90) }}</p>
                                     <span class="fw-bold mt-3">PKR {{ number_format($product->price, 2) }}</span>
                                 </div>
@@ -149,16 +153,16 @@
 
                 // Debounce the search (reduced to 200ms for faster response)
                 searchTimeout = setTimeout(() => {
-                    const category = document.querySelector('select[name="category"]')?.value || '';
-                    searchCategoryInput.value = category;
-
                     // Only search if query hasn't changed (debounce check)
                     const currentQuery = searchInput.value.trim();
                     if (currentQuery !== query) {
                         return; // Query changed during debounce, skip this request
                     }
 
-                    fetch(`{{ route('products.search.ajax') }}?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}`, {
+                    const categoryId = document.getElementById('categorySelect')?.value || '';
+                    searchCategoryInput.value = categoryId;
+                    
+                    fetch(`{{ route('products.search.ajax') }}?q=${encodeURIComponent(query)}&category=${encodeURIComponent(categoryId)}`, {
                         headers: {
                             'Accept': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
@@ -203,9 +207,10 @@
             searchInput.addEventListener('input', performSearch);
 
             // Also search when category changes
-            const categorySelect = document.querySelector('select[name="category"]');
+            const categorySelect = document.getElementById('categorySelect');
             if (categorySelect) {
                 categorySelect.addEventListener('change', function() {
+                    searchCategoryInput.value = this.value;
                     if (searchInput.value.trim().length > 0) {
                         performSearch();
                     }

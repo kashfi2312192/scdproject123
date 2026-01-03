@@ -43,6 +43,9 @@
                                     <td>{{ $product->discount_percentage ? number_format($product->discount_percentage, 2) . '%' : 'N/A' }}</td>
                                     <td>{{ $product->created_at->format('M d, Y') }}</td>
                                     <td class="text-end">
+                                        <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-outline-primary me-2" target="_blank" title="View Product">
+                                            <i class="fa-solid fa-eye"></i> View
+                                        </a>
                                         <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
                                         <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this product?')">
                                             @csrf

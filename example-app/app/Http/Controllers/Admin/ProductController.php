@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,8 @@ class ProductController extends Controller
 
     public function create(): View
     {
-        return view('admin.products.create');
+        $categories = Category::orderBy('name')->get();
+        return view('admin.products.create', compact('categories'));
     }
 
     public function store(StoreProductRequest $request): RedirectResponse
@@ -39,6 +41,35 @@ class ProductController extends Controller
 
         $data['is_in_stock'] = $request->has('is_in_stock') ? (bool) $request->input('is_in_stock') : false;
         $data['discount_percentage'] = $request->filled('discount_percentage') ? $request->input('discount_percentage') : null;
+        
+        // Handle tags - convert comma-separated string to array
+        if ($request->filled('tags')) {
+            $tags = array_map('trim', explode(',', $request->input('tags')));
+            $tags = array_filter($tags); // Remove empty values
+            $data['tags'] = !empty($tags) ? $tags : null;
+        } else {
+            $data['tags'] = null;
+        }
+        
+        // Handle category_id - set to null if empty
+        if (!$request->filled('category_id')) {
+            $data['category_id'] = null;
+        }
+
+        // Generate slug from name if not provided
+        if (empty($data['slug'] ?? null)) {
+            $baseSlug = Str::slug($data['name']);
+            $slug = $baseSlug;
+            $counter = 1;
+            
+            // Ensure slug is unique
+            while (Product::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+            
+            $data['slug'] = $slug;
+        }
 
         Product::create($data);
 
@@ -49,7 +80,8 @@ class ProductController extends Controller
 
     public function edit(Product $product): View
     {
-        return view('admin.products.edit', compact('product'));
+        $categories = Category::orderBy('name')->get();
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
@@ -66,6 +98,35 @@ class ProductController extends Controller
 
         $data['is_in_stock'] = $request->has('is_in_stock') ? (bool) $request->input('is_in_stock') : false;
         $data['discount_percentage'] = $request->filled('discount_percentage') ? $request->input('discount_percentage') : null;
+        
+        // Handle tags - convert comma-separated string to array
+        if ($request->filled('tags')) {
+            $tags = array_map('trim', explode(',', $request->input('tags')));
+            $tags = array_filter($tags); // Remove empty values
+            $data['tags'] = !empty($tags) ? $tags : null;
+        } else {
+            $data['tags'] = null;
+        }
+        
+        // Handle category_id - set to null if empty
+        if (!$request->filled('category_id')) {
+            $data['category_id'] = null;
+        }
+
+        // Generate slug from name if name changed and slug not provided
+        if (isset($data['name']) && $product->name !== $data['name'] && empty($data['slug'] ?? null)) {
+            $baseSlug = Str::slug($data['name']);
+            $slug = $baseSlug;
+            $counter = 1;
+            
+            // Ensure slug is unique (excluding current product)
+            while (Product::where('slug', $slug)->where('id', '!=', $product->id)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+            
+            $data['slug'] = $slug;
+        }
 
         $product->update($data);
 
